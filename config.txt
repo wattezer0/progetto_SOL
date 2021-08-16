@@ -1,0 +1,6 @@
+thread_n=46
+capacity=1000
+log_file=Pippo.txt
+max_files=100
+socketfile_name=Antonio.skt
+max_pending_conn=5
