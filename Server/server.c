@@ -88,23 +88,28 @@ void read_config_file ( char * config_name){
 
 
 
-void run_server (int fd_skt){
+void run_server (int fd_skt, struct sockaddr_un  server){
     int fd_c;
+    printf("%d\n", errno);
+
     listen(fd_skt, N); //N è il numero massimo di connessioni pendenti, da valutare
     
-    
+    unsigned int size = sizeof(server);
+    printf("%d\n", errno);
+    errno = 0;
         while (1){
-            fd_c = accept(fd_skt, (struct sockaddr*) NULL, 0); //da capire se NULL e 0 vanno bene
+            fd_c = accept(fd_skt, (struct sockaddr*) &server, &size);
+            printf("%d\n", errno);
             //printf ("fd_c = %d , fd_skt = %d\n", fd_c, fd_skt);
             //fd_c=accept(fd_skt,NULL,0);
             //parte di esempio
             char buf[N];
             read(fd_c,buf,N);
-            printf("Server got: %s\n",buf) ;
+            printf("Server got: %s\n",buf);
             write(fd_c,"Bye!",5);
             close(fd_skt); 
             close(fd_c);
-            //exit(EXIT_SUCCESS); 
+            exit(EXIT_SUCCESS); 
         }
     
 }
@@ -113,7 +118,7 @@ int main (){
     
     
     int fd_skt;
-    struct sockaddr_un  server = {AF_UNIX, SOCKNAME};
+    struct sockaddr_un  server ;
     config = (struct Config *) malloc (sizeof (struct Config));
     read_config_file("config.txt");
     printf("LETTURA CONFIG.TXT\n");
@@ -125,17 +130,29 @@ int main (){
     printf("*numero massimo di connessioni pendenti : %d\n", config->max_pending_conn);
 
 
-    //server.sun_family = AF_UNIX;
-    //strncpy(server.sun_path, SOCKNAME, UNIX_PATH_MAX);
+    
     
  
     //creo il socket
+    unlink(SOCKNAME);
+    
     fd_skt = socket(AF_UNIX,SOCK_STREAM, 0);
-    printf("fd_skt = %d\n", fd_skt);
     memset((void *) &server, '0', sizeof(server));
-    bind(fd_skt, (struct sockaddr *) &server, sizeof(server));
-    run_server(fd_skt);
+
+
+    server.sun_family = AF_UNIX;
+    strncpy(server.sun_path, SOCKNAME, strlen(SOCKNAME)+1);
+
+    if(bind(fd_skt, (struct sockaddr *) &server, sizeof(server))<0){
+        printf("bind fallita\n");
+        printf("%d\n", errno);
+        exit(EXIT_FAILURE);
+    }
+    
+
+    run_server(fd_skt, server);
     printf("**FINE**\n");
+    
     return 0;
 
 }

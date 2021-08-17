@@ -60,7 +60,7 @@ void find_requests (int fd_c, int argc, char ** argv) {
   //estraggo la struct serv_addr_flags da fd_c
   
   int c;
-  while ((c = getopt (argc, argv, "hfwWDrRdtlucp:")) != -1)
+  while ((c = getopt (argc, argv, "hfw:WD:rRdtlucp:")) != -1)
     switch (c)
       {
       case 'h':
@@ -86,9 +86,9 @@ void find_requests (int fd_c, int argc, char ** argv) {
       case 'D':
         serv_addr.D.d_flag= 1;
         serv_addr.D.dirname = (char *) malloc (100*sizeof(char));
-        printf("Inserisci il nome della cartella dove fare lo store dei file eliminati:\n");
-        scanf("%s",serv_addr.D.dirname);
-        //serv_addr.D.dirname = optarg;
+        //printf("Inserisci il nome della cartella dove fare lo store dei file eliminati:\n");
+        //scanf("%s",serv_addr.D.dirname);
+        serv_addr.D.dirname = optarg;
         break;
       case 'r':
         serv_addr.r_flag = 1;
@@ -143,16 +143,16 @@ int main (int argc, char **argv)
   struct sockaddr_un serv_addr;
   serv_addr.sun_family = AF_UNIX;
   strncpy(serv_addr.sun_path, SOCKNAME, UNIX_PATH_MAX);
-
+  printf("%d\n", errno);
   //parte di esempio
   char buf[100];
-  while (connect(fd_skt,(struct sockaddr*)&serv_addr, sizeof(serv_addr)) == -1 ) {
-    printf("Sono connesso!\n");
+  if (connect(fd_skt,(struct sockaddr*)&serv_addr, sizeof(serv_addr)) == -1 ) {
+    printf("Non Sono connesso!\n");
      
     if ( errno == ENOENT ) 
       sleep(1); /* sock non esiste */
     else exit(EXIT_FAILURE); }
-   write(fd_skt,"Hallo!",7);
+  write(fd_skt,"Hallo!",7);
   read(fd_skt,buf,100);
   printf("serv_addr got: %s\n",buf) ;
   close(fd_skt); 
