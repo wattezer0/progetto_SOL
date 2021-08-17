@@ -92,27 +92,25 @@ void run_server (int fd_skt){
     int fd_c;
     listen(fd_skt, N); //N è il numero massimo di connessioni pendenti, da valutare
     
-    while (1){
-        
-        fd_c = accept(fd_skt, (struct sockaddr*) NULL, 0); //da capire se NULL e 0 vanno bene
-        //printf ("fd_c = %d , fd_skt = %d\n", fd_c, fd_skt);
-       // fd_c=accept(fd_skt,NULL,0);
-        //parte di esempio
-        char buf[N];
-        read(fd_c,buf,N);
-        //printf("Server got: %s\n",buf) ;
-        write(fd_c,"Bye!",5);
-        //close(fd_skt); 
-        //close(fd_c);
-        //exit(EXIT_SUCCESS); 
-    }
+    
+        while (1){
+            fd_c = accept(fd_skt, (struct sockaddr*) NULL, 0); //da capire se NULL e 0 vanno bene
+            //printf ("fd_c = %d , fd_skt = %d\n", fd_c, fd_skt);
+            //fd_c=accept(fd_skt,NULL,0);
+            //parte di esempio
+            char buf[N];
+            read(fd_c,buf,N);
+            printf("Server got: %s\n",buf) ;
+            write(fd_c,"Bye!",5);
+            close(fd_skt); 
+            close(fd_c);
+            //exit(EXIT_SUCCESS); 
+        }
+    
 }
 
 int main (){
-    int wVersionRequested, err;
-    struct WSAData wsaData;
-    wVersionRequested = MAKEWORD(2, 2);
-    err = WSAStartup(wVersionRequested, &wsaData);
+    
     
     int fd_skt;
     struct sockaddr_un  server = {AF_UNIX, SOCKNAME};
@@ -134,7 +132,6 @@ int main (){
     //creo il socket
     fd_skt = socket(AF_UNIX,SOCK_STREAM, 0);
     printf("fd_skt = %d\n", fd_skt);
-    printf("%d\n", GETSOCKETERRNO());
     memset((void *) &server, '0', sizeof(server));
     bind(fd_skt, (struct sockaddr *) &server, sizeof(server));
     run_server(fd_skt);
