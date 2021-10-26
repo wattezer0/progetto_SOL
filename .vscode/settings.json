@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "API.C": "cpp",
+        "types.h": "c"
+    },
+    "workbench.colorTheme": "Monokai",
+    "window.autoDetectColorScheme": true
+}

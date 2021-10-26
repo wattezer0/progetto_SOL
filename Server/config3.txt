@@ -1,0 +1,6 @@
+thread_n=8
+capacity=33554432
+log_file=Log_file.txt
+max_files=100
+socketfile_name=socket.skt
+max_pending_conn=100
